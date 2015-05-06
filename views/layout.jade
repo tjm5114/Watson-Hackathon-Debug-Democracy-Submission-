@@ -1,0 +1,42 @@
+//- layout.jade
+doctype html
+html(lang='en')
+  head
+    block title
+      title Speech to Text
+
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+
+    link(rel='shortcut icon', href='/images/favicon.ico', type='image/x-icon')
+    link(rel='icon', href='/images/favicon.ico', type='image/x-icon')
+    link(rel='stylesheet', href='/css/watson-bootstrap-dark.css')
+    link(rel='stylesheet', href='/css/banner.css')
+    link(rel='stylesheet', href='/css/style.css')
+
+  body
+    div.container
+      div.row
+        div.col-lg-12
+          div.row.top-nav
+            div.col-lg-12
+              h3.heading.left Debug Democracy
+                span  Debugging the most complicated human creation
+                | : Demo                          
+          div.row.header(style='padding-bottom:0px;')
+            div.avatar.img-container.col-lg-1.col-xs-1
+              img(src='/images/debug.jpg')
+            div.col-lg-6.col-xs-6
+              h2 Scanning the airways to protect you from Political BS
+              p The embedded system will fuse the analytics on the images and audio
+                | to deduce whether the incoming stream is of noxious nature.
+                | Check out each step of the algorithm with the final result
+                | at the bottom of the page.                
+         block row-content
+
+    script(type='text/javascript', src='/js/browser-detect.js')
+    script(type='text/javascript', src='/js/jquery-1.11.1.min.js')
+    script(type='text/javascript', src='/js/speech-recognizer.js')
+    script(type='text/javascript', src='/js/socket.io.js')
+    script(type='text/javascript', src='/js/demo.js')
