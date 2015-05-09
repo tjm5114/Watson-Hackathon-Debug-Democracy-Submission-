@@ -155,14 +155,14 @@ $(document).ready(function() {
     transcriptAudio(audio2);
   });
  
-  //var AlchemyAPI = require('./alchemyapi');
- // var alchemyapi = new AlchemyAPI();
+ 
   
-  var dummyText = 'Romney: ...for amber waves of grain...for purple mountains majesty...[Caption: As Governor, Romney outsourced jobs to India. The Boston Globe 5/1/12] Romney: ..above the fruited plain...';
-  $('.send-image').click(function(){
+   $('.send-image').click(function(){
     $(".chart1").append("Hello World");
-    var socket = io();    
-    socket.on('faces', function(msg){
+    var socket = io();
+    var faceData = "hello World"
+    socket.emit('faceDataSend', faceData);
+    socket.on('faceDataReturn', function(msg){
       $(".chart1").append(msg);
     });    
   });
@@ -172,7 +172,7 @@ $(document).ready(function() {
     var socket = io();
     var myText = 'Romney: ...for amber waves of grain...for purple mountains majesty...[Caption: As Governor, Romney outsourced jobs to India. The Boston Globe 5/1/12] Romney: ...above the fruited plain...';
 
-    socket.emit('data', myText);       
+    socket.emit('textData', myText);       
     var video  = document.getElementById('video');
     var output = document.getElementById('output');
     

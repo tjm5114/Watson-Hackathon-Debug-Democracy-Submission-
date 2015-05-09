@@ -35,8 +35,8 @@ var alchemyapi = new AlchemyAPI();
 // if bluemix credentials exists, then override local
 var credentials = extend({
   version:'v1',
-	username: 'only I know',
-	password: 'what these are'
+	username: '9f89ac94-949b-45b3-b34b-e4f64134c4ae',
+	password: 'cLXZCiiMdRut'
 }, bluemix.getServiceCreds('speech_to_text')); // VCAP_SERVICES
 
 // Create the service wrapper
@@ -91,7 +91,7 @@ var textData = '';
 //    console.log("image faces are  : " + JSON.stringify(response)+ '\n');
 //  });
 io.on('connection', function(socket){
-  socket.on('data', function(msg){
+  socket.on('textData', function(msg){
     textData += msg;
     console.log('textData is now: ' + textData);
     alchemyapi.keywords("text", textData, {}, function(response) {
@@ -100,18 +100,18 @@ io.on('connection', function(socket){
       console.log("Keywords that are stringified are: "+keywords)
       socket.emit('keywords', keywords);    
     });
-    
+    });
+  socket.on('faceDataSend', function(msg){
     alchemyapi.image_faces("image", './public/images/Clinton.jpg', {outputMode: JSON}, function(response) {
       console.log("image faces are  : " + JSON.stringify(response) + '\n');
       var faces = JSON.stringify(response);
-      socket.emit('faces', faces);
-  });
+      socket.emit('faceDataReturn', faces);
+    });
+  }); 
   
-       
- 
-  });
+});
     
-  });
+ 
 // //  socket.on('dataImg', function(msg){
 // //    console.log('image message received');
 // //    fs.readFile('./public/images/Clinton.jpg','ucs2',function(err, data) {
