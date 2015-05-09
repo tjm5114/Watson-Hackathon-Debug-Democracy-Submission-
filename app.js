@@ -102,11 +102,17 @@ io.on('connection', function(socket){
     });
     });
   socket.on('faceDataSend', function(msg){
-    alchemyapi.image_faces("image", './public/images/Clinton.jpg', {outputMode: JSON}, function(response) {
-      console.log("image faces are  : " + JSON.stringify(response) + '\n');
-      var faces = JSON.stringify(response);
-      socket.emit('faceDataReturn', faces);
+    fs.writeFile("out.jpg", msg, 'base64', function(err) {
+      console.log(err);
+      alchemyapi.image_faces("image", "./out.jpg", {outputMode: JSON}, function(response) { 
+        console.log("image faces are  : " + JSON.stringify(response) + '\n');
+        var faces = JSON.stringify(response);
+        socket.emit('faceDataReturn', faces);
+      });
     });
+    
+   
+    
   }); 
   
 });

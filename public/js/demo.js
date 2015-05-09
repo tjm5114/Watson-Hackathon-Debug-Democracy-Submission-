@@ -158,25 +158,14 @@ $(document).ready(function() {
  
   
    $('.send-image').click(function(){
-    $(".chart1").append("Hello World");
+    $(".chart1").append("Image features are: \n " );
     var socket = io();
-    var faceData = "hello World"
-    socket.emit('faceDataSend', faceData);
-    socket.on('faceDataReturn', function(msg){
-      $(".chart1").append(msg);
-    });    
-  });
-
-  $('.send-text').click(function(){
-    console.log("hello World");
-    var socket = io();
-    var myText = 'Romney: ...for amber waves of grain...for purple mountains majesty...[Caption: As Governor, Romney outsourced jobs to India. The Boston Globe 5/1/12] Romney: ...above the fruited plain...';
-
-    socket.emit('textData', myText);       
+    
+      
     var video  = document.getElementById('video');
     var output = document.getElementById('output');
     
-    var scaleFactor = 0.25;
+    var scaleFactor = 1;
     
     
     var w = video.videoWidth * scaleFactor;
@@ -185,19 +174,34 @@ $(document).ready(function() {
         canvas.width  = w;
         canvas.height = h;
     var ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, w, h);
+        ctx.drawImage(video, 0, 0, w, h);  
+        var dataURI = canvas.toDataURL();
+        var cleanURI = dataURI.replace(/^data:image\/(png|jpg);base64,/, ""); 
+      
+    socket.emit('faceDataSend', cleanURI);
+    socket.on('faceDataReturn', function(msg){
+      $(".chart1").append(msg);
+    });    
+  });
+
+  $('.send-text').click(function(){
+    
+    var socket = io();
+    var myText = 'Romney: ...for amber waves of grain...for purple mountains majesty...[Caption: As Governor, Romney outsourced jobs to India. The Boston Globe 5/1/12] Romney: ...above the fruited plain...';
+
+    socket.emit('textData', myText);       
+    
         
        // var data = ctx.getImageData(0,0,w,h);
        // var jData = JSON.stringify(data);
        // console.log('jdata is: '+ jData);
         
-        var dataURL = canvas.toDataURL();
-        var cleanURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+        
        // console.log('cleanURL is: '+cleanURL);       
        // console.log('decodeData is: ');
        // console.log('dataURI is: '+ dataURL);
        // console.log('cleanURI is: '+ cleanURL);
-        $(".chart").append("image faces are  : ");
+        $(".chart").append("textual features are  : ");
        
         
         
@@ -276,136 +280,136 @@ $(document).ready(function() {
 
 });
 
-function filter() {
-  var video  = document.getElementById('video');
-  $('#filter').show();
-  video.muted = true;
-}
-
-function unfilter(){
-  var video  = document.getElementById('video');
-  $('#filter').hide();
-  video.muted = false;
-}
-
-document.getElementById("video").addEventListener('play', false);
+//function filter() {
+//  var video  = document.getElementById('video');
+//  $('#filter').show();
+//  video.muted = true;
+//}
+//
+//function unfilter(){
+//  var video  = document.getElementById('video');
+//  $('#filter').hide();
+//  video.muted = false;
+//}
+//
+//document.getElementById("video").addEventListener('play', false);
 $('#filter').hide();
-
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 1 && this.currentTime <= 67) {
-       unfilter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 68 && this.currentTime <=98) {
-       filter();
-   }
-}, false);
-
-
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime > 99 && this.currentTime <= 124) {
-       unfilter();
-   }
-}, false);
-
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 125 && this.currentTime <= 155) {
-       filter();
-   }
-}, false);
-
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 156 && this.currentTime <= 229) {
-       unfilter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 230 && this.currentTime <= 259) {
-       filter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 260 && this.currentTime <= 264) {
-       unfilter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 265 && this.currentTime <= 297) {
-       filter();
-   }
-}, false);
-
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 298 && this.currentTime <= 300) {
-       unfilter();
-   }
-}, false);
-
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 298 && this.currentTime <= 327) {
-       filter();
-   }
-}, false);
-
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 328 && this.currentTime <= 350) {
-       unfilter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 351 && this.currentTime <= 385) {
-       filter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 386 && this.currentTime <= 433) {
-       unfilter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 434 && this.currentTime <= 433) {
-       filter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 434 && this.currentTime <= 463) {
-       filter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 464 && this.currentTime <= 475) {
-       unfilter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 476 && this.currentTime <= 505) {
-       filter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 506 && this.currentTime <= 508) {
-       unfilter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 509 && this.currentTime <= 567) {
-       filter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 567 && this.currentTime <= 596) {
-       unfilter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 597 && this.currentTime <= 625) {
-       filter();
-   }
-}, false);
-document.getElementById("video").addEventListener("timeupdate", function() {
-  if (this.currentTime >= 626) {
-       unfilter();
-   }
-}, false);
+//
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 1 && this.currentTime <= 67) {
+//       unfilter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 68 && this.currentTime <=98) {
+//       filter();
+//   }
+//}, false);
+//
+//
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime > 99 && this.currentTime <= 124) {
+//       unfilter();
+//   }
+//}, false);
+//
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 125 && this.currentTime <= 155) {
+//       filter();
+//   }
+//}, false);
+//
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 156 && this.currentTime <= 229) {
+//       unfilter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 230 && this.currentTime <= 259) {
+//       filter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 260 && this.currentTime <= 264) {
+//       unfilter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 265 && this.currentTime <= 297) {
+//       filter();
+//   }
+//}, false);
+//
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 298 && this.currentTime <= 300) {
+//       unfilter();
+//   }
+//}, false);
+//
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 298 && this.currentTime <= 327) {
+//       filter();
+//   }
+//}, false);
+//
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 328 && this.currentTime <= 350) {
+//       unfilter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 351 && this.currentTime <= 385) {
+//       filter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 386 && this.currentTime <= 433) {
+//       unfilter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 434 && this.currentTime <= 433) {
+//       filter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 434 && this.currentTime <= 463) {
+//       filter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 464 && this.currentTime <= 475) {
+//       unfilter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 476 && this.currentTime <= 505) {
+//       filter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 506 && this.currentTime <= 508) {
+//       unfilter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 509 && this.currentTime <= 567) {
+//       filter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 567 && this.currentTime <= 596) {
+//       unfilter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 597 && this.currentTime <= 625) {
+//       filter();
+//   }
+//}, false);
+//document.getElementById("video").addEventListener("timeupdate", function() {
+//  if (this.currentTime >= 626) {
+//       unfilter();
+//   }
+//}, false);
 
