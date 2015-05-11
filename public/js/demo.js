@@ -120,7 +120,7 @@ $(document).ready(function() {
   }
 
   //Sample audios
-  var audio1 = 'audio/hackAudio1.wav',
+  var audio1 = 'audio/output.wav',
     audio2 = 'audio/sample2.wav';
 
   function _error(xhr) {
@@ -158,7 +158,8 @@ $(document).ready(function() {
  
   
    $('.send-image').click(function(){
-    $(".chart1").append("Image features are: \n " );
+    $(".chart1").append("The following data has been extracted from the frame: </br>" );
+    $(".chart1").append('<br />');
     var socket = io();
     
       
@@ -180,8 +181,16 @@ $(document).ready(function() {
       
     socket.emit('faceDataSend', cleanURI);
     socket.on('faceDataReturn', function(msg){
-      $(".chart1").append(msg);
-    });    
+     var name = msg.imageFaces[0].identity.name
+     var nameScore = msg.imageFaces[0].identity.score
+      $(".chart1").append('The person in the image is: '+name + '<br />');
+     $(".chart1").append('With a confidence of: '+nameScore + '<br />');
+    }); 
+    socket.on('news', function(msg){
+      //msgJSON= JSON.stringify(msg);
+      console.log('We recieved the news object');
+      $(".chart1").append('A news story about the person is the following: <br /> ' + msg );
+    });
   });
 
   $('.send-text').click(function(){
@@ -242,7 +251,52 @@ $(document).ready(function() {
       });
   });  
         
-
+  
+  function imageAnalyze(){
+    
+    var socket = io();
+    
+      
+    var video  = document.getElementById('video');
+    var output = document.getElementById('output');
+    
+    var scaleFactor = 1;
+    
+    
+    var w = video.videoWidth * scaleFactor;
+    var h = video.videoHeight * scaleFactor;   
+    var canvas = document.createElement('canvas');
+        canvas.width  = w;
+        canvas.height = h;
+    var ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, w, h);  
+        var dataURI = canvas.toDataURL();
+        var cleanURI = dataURI.replace(/^data:image\/(png|jpg);base64,/, ""); 
+      
+    socket.emit('faceDataSend', cleanURI);
+    socket.on('faceDataReturn', function(msg){
+      
+      var name = msg.imageFaces[0].identity.name
+      var nameScore = msg.imageFaces[0].identity.score
+      $(".chart1").append('The person in the image is: '+name + '<br />');
+      $(".chart1").append('With a confidence of: '+nameScore + '<br />');      
+     
+    });  
+    
+    socket.on('news', function(msg){
+      //msgJSON= JSON.stringify(msg);
+      console.log('We recieved the news object');
+      var msgJSON = JSON.parse(msg);
+      var length = Object.keys(msgJSON.result.docs[1].source.enriched.url.keywords).length;
+      var lengthDoc = Object.keys(msgJSON.result.docs).length;
+      console.log('There are ' +length + ' number of keywords');
+      console.log('There are ' +lengthDoc + ' number of documents');
+      console.log('We found this before posting: ' + JSON.stringify(msgJSON.result.docs[1].source.enriched.url));
+      $(".chart1").append('A keyword from a news story about the person is the following: <br /> ' + msgJSON.result.docs[1].source.enriched.url.keywords[1].text );
+      $(".chart1").append('The relevance of this keyword is: <br /> ' + msgJSON.result.docs[1].source.enriched.url.keywords[1].relevance );
+    });
+  }
+  
   function showAudioResult(data){
     $('.loading').hide();
     transcript.empty();
@@ -266,18 +320,43 @@ $(document).ready(function() {
     });
   }
   
-  function classes(root) {
-    var classes = [];
+ document.getElementById("video").addEventListener('play', imageAnalyze, false);
+  
+  $('#filter').hide();
+  
 
-    function recurse(name, node) {
-      if (node.children) node.children.forEach(function(child) { recurse(node.name, child); });
-      else classes.push({packageName: name, className: node.name, value: node.size});
-    }
 
-    recurse(null, root);
-    return {children: classes};
-  }
-
+//  document.getElementById("video").addEventListener('play', function() {
+//    var context = new AudioContext();
+//    var gainNode = context.createGain();
+//    gainNode.gain.value = 1;                   // Change Gain Value to test
+//    var filter = context.createBiquadFilter();
+//    filter.type = 2;                          // Change Filter type to test
+//    filter.frequency.value = 5040; 
+//    
+//    
+//    var source = context.createMediaElementSource(video);
+//    source.connect(gainNode);
+//    gainNode.connect(filter);
+//    filter.connect(context.destination);
+////    var config = {
+////        callback : transcriptAudio(),
+////     }
+//
+//    //context.decodeAudioData(source,transcriptAudio(buffer));
+//    var rec = new Recorder(source);
+////    rec.configure(config);
+//    rec.record();
+//    setTimeout(function(){
+//      rec.stop();
+//      console.log('We are inside audio');
+//      rec.exportWAV( Recorder.forceDownload,'audio/wav');
+//      transcriptAudio('output.wav');
+//      
+//    }, 10000);
+//    
+//    console.log('we sent source and its looks like' + source);
+//  });
 });
 
 //function filter() {
@@ -292,8 +371,8 @@ $(document).ready(function() {
 //  video.muted = false;
 //}
 //
-//document.getElementById("video").addEventListener('play', false);
-$('#filter').hide();
+
+
 //
 //document.getElementById("video").addEventListener("timeupdate", function() {
 //  if (this.currentTime >= 1 && this.currentTime <= 67) {

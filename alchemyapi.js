@@ -16,6 +16,7 @@
 
 
 var http = require('http');
+var https = require('https');
 var fs = require('fs');
 
 
@@ -197,6 +198,76 @@ function AlchemyAPI() {
       postReq.end();
     }
   };
+  
+  /**
+   * HTTPS GET NEWS Request
+   * It makes the call, then converts the returned JSON string into a Javascript object. 
+   * 
+   * INPUT:
+   * url -> the full URI encoded url
+   * params -> the call parameters, both required and optional
+   * sfile -> a file to stream if this is a file upload (optional)
+   * callback -> the callback function
+   *
+   * OUTPUT:
+   * The response, already converted from JSON to a Javascript object. 
+ */
+  
+  this.analyzeNews = function (endpoint, params, sfile, callback) {
+    var urlKVPairs = [];
+    var reqParams = "";
+    var reqBody = "";
+    var upload = false;
+    var startTime = params.startTime || 'now-5h'; 
+    var endTime = params.endTime || 'now';
+    var maxResult = params.maxResult || '2';
+    var addendum = params.addendum || '';
+    //Add the API key and set the output mode to JSON
+    params['apikey'] = this.apikey;
+    params['outputMode'] = 'json';
+    
+    
+
+    // This is an upload if there is a file for streaming
+    if (typeof sfile === "string") {
+      params['imagePostMode'] = 'raw';
+      upload = true;
+    } else { // not an upload, sfile param must be the callback
+      callback = sfile;
+    }
+
+    //Build the API options into the URL (for upload) or body
+    Object.keys(params).forEach(function(key) {
+      urlKVPairs.push(key + '=' + encodeURIComponent(params[key]));
+    });
+    if (upload) {
+      reqParams = "?" + urlKVPairs.join('&');
+    } else {
+      reqBody = urlKVPairs.join('&');
+    }
+
+    //Build the HTTP request options
+    var opts = {
+      method: "GET",
+      hostname: AlchemyAPI.HOST,
+      path: 'https://'+ AlchemyAPI.HOST+ AlchemyAPI.BASE_URL + endpoint + '?apikey='+this.apikey+'&outputMode=json&start='+ startTime+ '&end=' + endTime +'&maxResults=' + maxResult + addendum
+     };
+    console.log('The URL being Gotten is: ' + opts.path);
+    https.get(opts.path, function(res) {
+      
+      var response = '';
+      console.log("Got response: " + res.statusCode);
+ 
+      res.on('data', function (chunk) {
+        //console.log('BODY: ' + chunk);       
+      })
+      res.on('data', function (chunk) { response += chunk; });
+      res.on('end', function () { callback(JSON.parse(response)); });
+    }).on('error', function(e) {
+      console.log("Got error: " + e.message);
+    });
+
+  };
 
 }; // end AlchemyAPI
 
@@ -269,6 +340,7 @@ AlchemyAPI.ENDPOINTS['image_keywords'] = {};
 AlchemyAPI.ENDPOINTS['image_keywords']['url'] = '/url/URLGetRankedImageKeywords';
 AlchemyAPI.ENDPOINTS['image_keywords']['image'] = '/image/ImageGetRankedImageKeywords';
 AlchemyAPI.ENDPOINTS['image_keywords']['face']='/image/ImageGetRankedImageFaceTags';
+AlchemyAPI.ENDPOINTS['news']='/data/GetNews';
 
 
 
@@ -843,5 +915,15 @@ if (flavor === "image") { // if it's an image, we'll pass the image to upload
   this.analyze(AlchemyAPI.ENDPOINTS['image_keywords']['face'],
       options, callback);
 }
+};
+
+AlchemyAPI.prototype.news = function(flavor, data, options, callback) {
+  
+  options = options || {}
+  
+  
+  //Add the data to the options and analyze
+  //options[flavor] = data;
+  this.analyzeNews(AlchemyAPI.ENDPOINTS['news'], options, callback);
 };
 

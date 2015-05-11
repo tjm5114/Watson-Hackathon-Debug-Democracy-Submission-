@@ -71,6 +71,7 @@ Microphone.prototype.onMediaStream =  function(stream) {
     this.audioContext = new AudioCtx();
 
   var gain = this.audioContext.createGain();
+  //Potentially stream media through this audioInput variable
   var audioInput = this.audioContext.createMediaStreamSource(stream);
 
   audioInput.connect(gain);

@@ -103,20 +103,43 @@ io.on('connection', function(socket){
     });
   socket.on('faceDataSend', function(msg){
     fs.writeFile("out.jpg", msg, 'base64', function(err) {
-      console.log(err);
+      console.log('Errors are: ' + err);
       alchemyapi.image_faces("image", "./out.jpg", {outputMode: JSON}, function(response) { 
-        console.log("image faces are  : " + JSON.stringify(response) + '\n');
-        var faces = JSON.stringify(response);
-        socket.emit('faceDataReturn', faces);
+        var faces = response.imageFaces[0].identity.name;
+        var dumbText = '';
+        var personName = faces;
+        personName = personName.replace(/\s+/g, '^');
+        
+        //remove spaces
+        //personName = personName.replace(/\s+/g, '_');
+        console.log('The personName variable is: ' + personName);
+        var newsOptions = {
+            startTime : 'now-1h',
+            endTime: 'now',
+            maxResults: '1',
+            addendum: '&q.enriched.url.enrichedTitle.entities.entity.text=['+ personName + ']&.enriched.url.enrichedTitle.entities.entity.type=person&return=schema.enriched.url.title,schema.enriched.url.keywords'};
+        alchemyapi.news("text", dumbText, newsOptions, function(response){
+          
+          var responseJSON = JSON.stringify(response);
+          //console.log('The news response is: '+ responseJSON);          
+          socket.emit('news', responseJSON);
+        });
+        
+        
+        console.log('The faces variable being past is: '+faces)
+        socket.emit('faceDataReturn', response);
+        
+    
       });
     });
-    
    
-    
-  }); 
+   
   
+  });
 });
-    
+
+
+
  
 // //  socket.on('dataImg', function(msg){
 // //    console.log('image message received');
