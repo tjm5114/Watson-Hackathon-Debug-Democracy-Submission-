@@ -287,13 +287,72 @@ $(document).ready(function() {
       //msgJSON= JSON.stringify(msg);
       console.log('We recieved the news object');
       var msgJSON = JSON.parse(msg);
+      
+      //check for limits on the JSON message
       var length = Object.keys(msgJSON.result.docs[1].source.enriched.url.keywords).length;
       var lengthDoc = Object.keys(msgJSON.result.docs).length;
+      
+      //made variable calls a little easier since we know the structure
+      var dataJSON = msgJSON.result.docs[1].source.enriched.url.keywords;
+      
+      //create graph data source
+      var data = {name:'keywords', children: []};
+      for(var i = 0; i < 10; i++){
+        data.children.push({
+          keyword: dataJSON[i].text,
+          size: dataJSON[i].relevance*10
+        });
+        console.log('The data element size for ' + i+ ' is ' + data.children[i].size);
+      }
+      
+//      var data = {
+//          name : "root",
+//          children : [
+//            { name: '1', size: 100 },
+//            { name: '2', size: 85 },
+//            { name: '3', size: 70 },
+//            { name: '4', size: 55 },
+//            { name: '5', size: 40 },
+//            { name: '6', size: 25 },
+//            { name: '7', size: 10 },
+//          ]
+//        }
+      
+      var w = 640,
+      h = 480;
+      
+      var canvas = d3.select("#chart2")
+      .append("svg:svg")
+      .attr('width', w)
+      .attr('height', h);
+
+    var nodes = d3.layout.pack()
+      .value(function(d) { return d.size; })
+      .size([w, h])
+      .nodes(data);
+    
+    // Get rid of root node
+    nodes.shift();
+
+    canvas.selectAll('circles')
+        .data(nodes)
+      .enter().append('svg:circle')
+        .attr('cx', function(d) { return d.x; })
+        .attr('cy', function(d) { return d.y; })
+        .attr('r', function(d) { return d.r; })
+        .attr('fill', 'white')
+        .attr('stroke', 'grey');
+      
+      
+      console.dir('the data JSON variable constructed is: ' +data.children);
       console.log('There are ' +length + ' number of keywords');
       console.log('There are ' +lengthDoc + ' number of documents');
-      console.log('We found this before posting: ' + JSON.stringify(msgJSON.result.docs[1].source.enriched.url));
+      //console.log('We found this before posting: ' + JSON.stringify(msgJSON.result.docs[1].source.enriched.url.keywords));
+      
       $(".chart1").append('A keyword from a news story about the person is the following: <br /> ' + msgJSON.result.docs[1].source.enriched.url.keywords[1].text );
       $(".chart1").append('The relevance of this keyword is: <br /> ' + msgJSON.result.docs[1].source.enriched.url.keywords[1].relevance );
+    
+      
     });
   }
   
@@ -324,6 +383,7 @@ $(document).ready(function() {
   
   $('#filter').hide();
   
+
 
 
 //  document.getElementById("video").addEventListener('play', function() {
