@@ -297,12 +297,15 @@ $(document).ready(function() {
       
       //create graph data source
       var data = {name:'keywords', children: []};
-      for(var i = 0; i < 10; i++){
+      for(var i = 0; i < length; i++){
+        console.log('dataJSON looks like '+ JSON.stringify(dataJSON[i]));
         data.children.push({
           keyword: dataJSON[i].text,
-          size: dataJSON[i].relevance*10
+          size: dataJSON[i].relevance*10,
+          sentiment: dataJSON[i].sentiment.type
         });
         console.log('The data element size for ' + i+ ' is ' + data.children[i].size);
+        console.log('The data element size for ' + i+ ' is ' + data.children[i].sentiment);
       }
       
 //      var data = {
@@ -319,6 +322,7 @@ $(document).ready(function() {
 //        }
       
       var w = 640,
+      color = d3.scale.category10(),
       h = 480;
       
       var canvas = d3.select("#chart2")
@@ -328,21 +332,40 @@ $(document).ready(function() {
 
     var nodes = d3.layout.pack()
       .value(function(d) { return d.size; })
-      .size([w, h])
+      .size([w, h])      
       .nodes(data);
+    
     
     // Get rid of root node
     nodes.shift();
 
-    canvas.selectAll('circles')
-        .data(nodes)
-      .enter().append('svg:circle')
+    var node = canvas.selectAll('circles');
+    
+    var nodeData = node.data(nodes)
+    
+     nodeData.enter().append('svg:circle')
         .attr('cx', function(d) { return d.x; })
         .attr('cy', function(d) { return d.y; })
         .attr('r', function(d) { return d.r; })
-        .attr('fill', 'white')
-        .attr('stroke', 'grey');
-      
+        .attr("stroke", 'white')        
+        .attr('fill', function(d) { if(d.sentiment == 'negative'){return 'red';}else if(d.sentiment == 'neutral'){return 'yellow';}else{return 'green';} });
+    
+     nodeData.enter().append("g")
+        .attr("class", "node")
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+    
+    
+    nodeData.append("text")
+      .attr("dy", ".3em")
+      .style("text-anchor", "middle")
+      .text(function(d) { return d.keyword.substring(0, d.r / 3); });
+    
+    
+   
+    
+    
+ 
+     
       
       console.dir('the data JSON variable constructed is: ' +data.children);
       console.log('There are ' +length + ' number of keywords');
